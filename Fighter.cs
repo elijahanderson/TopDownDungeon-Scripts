@@ -11,6 +11,9 @@ public abstract class Fighter : MonoBehaviour
     public float mana;
     public float maxMana;
     public float manaRegenRate;
+    public float stamina;
+    public float maxStamina;
+    public float staminaRegenRate;
     public bool isDead;
 
     // immunity
@@ -38,19 +41,26 @@ public abstract class Fighter : MonoBehaviour
         InvokeRepeating("UpdateEverySecond", 0, 1.0f);
     }
 
-    protected virtual void UpdateEverySecond() {
+    protected virtual void Update() {
         // apply health/mana regen once a second if needed
-        float hitpointCalc = hitpoint + healthRegenRate;
+        float hitpointCalc = hitpoint + (healthRegenRate * Time.deltaTime);
         if (maxHitpoint < hitpointCalc)
             hitpoint += maxHitpoint - hitpoint;
         else if (maxHitpoint >= hitpointCalc)
             hitpoint = hitpointCalc;
 
-        float manaCalc = mana + manaRegenRate;
+        float manaCalc = mana + (manaRegenRate * Time.deltaTime);
         if (maxMana < manaCalc)
             mana += maxMana - mana;
         else if (maxMana >= manaCalc)
             mana = manaCalc;
+
+        float staminaCalc = stamina + (staminaRegenRate * Time.deltaTime);
+        Debug.Log(staminaCalc);
+        if (maxStamina < staminaCalc)
+            stamina += maxStamina - stamina;
+        else if (maxStamina >= staminaCalc)
+            stamina = staminaCalc;
 
         nextUpdate += updateInterval;
     }

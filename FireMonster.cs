@@ -6,14 +6,16 @@ public class FireMonster : Enemy
 {
     protected override void Start() {
         base.Start();
-        xSpeed = 0.25f;
-        ySpeed = 0.25f;
+        moveSpeed = 0.25f;
         hitpoint = 30;
         maxHitpoint = 30;
         healthRegenRate = 0.0f; // no regen
         mana = 0.0f;
         maxMana = 0.0f;
-        manaRegenRate = 0.0f; // no regen
+        manaRegenRate = 0.0f;
+        stamina = 10.0f;
+        maxStamina = 10.0f;
+        staminaRegenRate = 2.0f;
         triggerLength = 1.0f;
         chaseLength = 20.0f;
     }

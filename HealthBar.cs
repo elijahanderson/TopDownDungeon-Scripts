@@ -32,7 +32,7 @@ public class HealthBar : MonoBehaviour
         }
 
         int healthBarLengthCalc = (int) ((containerLength - 8) * ((float) player.hitpoint / (float) player.maxHitpoint));
-        if (healthBarLengthCalc == 0)
+        if (player.hitpoint <= 0)
             healthBar.gameObject.SetActive(false);
         else
             healthBar.offsetMax = new Vector2(healthBarLengthCalc - containerLength + 4, healthBar.offsetMax.y);

@@ -7,8 +7,7 @@ public abstract class Mover : Fighter
     protected BoxCollider2D boxCollider;
     protected Vector2 moveDelta;
     protected RaycastHit2D hit;
-    protected float xSpeed;
-    protected float ySpeed;
+    protected float moveSpeed;
 
     protected override void Start() {
         base.Start();
@@ -17,7 +16,7 @@ public abstract class Mover : Fighter
 
     protected virtual void UpdateMotor(Vector2 input) {
         // reset moveDelta
-        moveDelta = new Vector2(input.x * xSpeed, input.y * ySpeed);
+        moveDelta = new Vector2(input.x * moveSpeed, input.y * moveSpeed);
 
         // swap sprite direction
         if (moveDelta.x > 0) {

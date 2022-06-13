@@ -1,3 +1,4 @@
+using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +7,11 @@ public class Weapon : Interactable
 {
     // damage
     public Player player;
-    public int damagePoint;
+    public int minDamage;
+    public int maxDamage;
     public float pushForce;
     public int weaponLevel;
-    public int manaCost;
+    public int staminaCost;
 
     private SpriteRenderer spriteRenderer;
     private Animator swingAnimation;
@@ -21,33 +23,32 @@ public class Weapon : Interactable
     protected override void Start() {
         base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        damagePoint = 10;
+        minDamage = 5;
+        maxDamage = 15;
         pushForce = 5.0f;
         weaponLevel = 0;
         cooldown = 0.5f;
         lastSwing = Time.time;
-        manaCost = 5;
+        staminaCost = 4;
         swingAnimation = GetComponent<Animator>();
     }
 
     protected override void Update() {
         base.Update();
-        // check if allowed to swing
-        if (Time.time - lastSwing >= cooldown) {
-            if (Input.GetKey(KeyCode.Space)) {
-                lastSwing = Time.time;
-                player.mana -= manaCost;
-                swingAnimation.SetTrigger("Swing");
-            }
+        // swing if allowed to swing
+        if (Input.GetKey(KeyCode.F) && player.stamina > 0 && Time.time - lastSwing >= cooldown) {
+            lastSwing = Time.time;
+            player.stamina -= staminaCost;
+            swingAnimation.SetTrigger("Swing");
         }
-
     }
 
     protected override void OnCollide(Collider2D hit) {
         if (hit.name != "Player" && hit.tag == "Fighter" && !player.isDead) {
             // send damage to the enemy
+            Random rand = new Random();
             Damage dmg = new Damage();
-            dmg.damageAmount = damagePoint;
+            dmg.damageAmount = rand.Next(minDamage, maxDamage);
             dmg.origin = transform.position;
             dmg.push = pushForce;
             hit.SendMessage("ReceiveDamage", dmg);

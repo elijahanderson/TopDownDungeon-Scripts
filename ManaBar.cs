@@ -34,15 +34,18 @@ public class ManaBar : MonoBehaviour
         }
 
         // set mana bar's length based on player's current and max mana
-        int manaBarLengthCalc = (int) ((containerLength - 8) * ((float) player.mana / (float) player.maxMana));
+        int manaBarLengthCalc = (int) ((containerLength - 8) * Mathf.Abs(((float) player.mana / (float) player.maxMana)));
         // if mana is negative, change the color & alpha
-        if (manaBarLengthCalc < 0) {
+        if (player.mana < 0) {
             Color tempColor = manaBarImage.color;
             tempColor.a = 0.5f;
             manaBarImage.color = tempColor;
+        } else {
+            Color tempColor = manaBarImage.color;
+            tempColor.a = 1.0f;
+            manaBarImage.color = tempColor;
         }
         manaBarRect.offsetMax = new Vector2(manaBarLengthCalc - containerLength + 4, manaBarRect.offsetMax.y);
-
         manaInt = (int) player.mana;
         manaText.text = manaInt.ToString() + "/" + maxManaInt.ToString();
     }
