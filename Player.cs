@@ -4,28 +4,57 @@ using UnityEngine;
 
 public class Player : Mover
 {
+    // for adjusting UI
+    public HealthBar healthBar;
+    public ManaBar manaBar;
+    public StaminaBar staminaBar;
+
+    // attributes
+    public int constitution;
+    public int strength;
+    public int intelligence;
+    public int spirituality;
+    public int endurance;
+    public int equipLoad;
+
     protected Vector2 target;
     protected RaycastHit2D hitX;
     protected RaycastHit2D hitY;
 
-    private float dashCooldown;
-    private float dashStaminaCost;
-    private float dashSpeed;
-    private float lastDash;
-    private bool isDashing;
+    // dash related variables
+    protected float dashCooldown;
+    protected float dashStaminaCost;
+    protected float dashSpeed;
+    protected float lastDash;
+    protected bool isDashing;
 
     protected override void Start() {
         base.Start();
-        moveSpeed = 0.75f;
-        hitpoint = 100.0f;
-        maxHitpoint = 100.0f;
-        healthRegenRate = 2.0f;
-        mana = 10.0f;
-        maxMana = 10.0f;
-        manaRegenRate = 0.5f;
-        stamina = 10.0f;
-        maxStamina = 10.0f;
-        staminaRegenRate = 2.0f;
+        constitution = GameManager.gameManagerInstance.constitution;
+        strength = GameManager.gameManagerInstance.strength;
+        intelligence = GameManager.gameManagerInstance.intelligence;
+        spirituality = GameManager.gameManagerInstance.spirituality;
+        endurance = GameManager.gameManagerInstance.endurance;
+        hitpoint = 100 + (constitution * 20);
+        maxHitpoint = 100 + (constitution * 20);
+        GameManager.gameManagerInstance.playerMaxHitpoint = maxHitpoint;
+        healthRegenRate = 2.0f + (constitution * 0.10f);
+        GameManager.gameManagerInstance.playerHealthRegenRate = healthRegenRate;
+        mana = 10 + (intelligence * 10);
+        maxMana = 10 + (intelligence * 10);
+        GameManager.gameManagerInstance.playerMaxMana = maxMana;
+        manaRegenRate = 0.5f + (intelligence * 0.05f);
+        GameManager.gameManagerInstance.playerManaRegenRate = manaRegenRate;
+        stamina = 10 + (endurance * 10);
+        maxStamina = 10 + (endurance * 10);
+        GameManager.gameManagerInstance.playerMaxStamina = maxStamina;
+        staminaRegenRate = 2.0f + (endurance * 0.05f);
+        GameManager.gameManagerInstance.playerStaminaRegenRate = staminaRegenRate;
+        moveSpeed = 0.75f + (endurance * 0.02f);
+        GameManager.gameManagerInstance.playerMoveSpeed = moveSpeed;
+        equipLoad = 20 + endurance;
+        GameManager.gameManagerInstance.equipLoad = equipLoad;
+
         dashCooldown = 1.0f;
         dashStaminaCost = 5.0f;
         dashSpeed = 2.0f;
@@ -40,7 +69,10 @@ public class Player : Mover
         if ((Input.GetMouseButton(0) || Input.GetMouseButton(4)) && !isDashing)
             target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         // dash mechanic
-        if (Input.GetKey(KeyCode.Space) && Time.time - lastDash >= dashCooldown && stamina > 0)
+        if (Input.GetKey(KeyCode.Space)
+                                        && Time.time - lastDash >= dashCooldown
+                                        && stamina > 0
+                                        && Vector2.Distance(target, transform.position) > 0.01f)
             StartCoroutine("Dash");
     }
 
@@ -95,4 +127,89 @@ public class Player : Mover
         moveSpeed /= dashSpeed;
         isDashing = false;
     }
+
+    /*
+        A bunch of setters for managing player's attributes and stats
+    */
+    // attributes
+    private void SetConstitution(int nConstitution) {
+        GameManager.gameManagerInstance.constitution = nConstitution;
+        constitution = nConstitution;
+        maxHitpoint = 100 + (constitution * 20);
+        GameManager.gameManagerInstance.playerMaxHitpoint = maxHitpoint;
+        hitpoint = maxHitpoint + 100 + (constitution * 20);
+        healthRegenRate = 2.0f + (constitution * 0.10f);
+        GameManager.gameManagerInstance.playerHealthRegenRate = healthRegenRate;
+        healthBar.UpdateContainerLength();
+    }
+    private void SetStrength(int nStrength) {
+        GameManager.gameManagerInstance.strength = nStrength;
+        strength = nStrength;
+    }
+    private void SetIntelligence(int nIntelligence) {
+        GameManager.gameManagerInstance.intelligence = nIntelligence;
+        intelligence = nIntelligence;
+        mana = intelligence + 10 + (intelligence * 10);
+        maxMana = intelligence + 10 + (intelligence * 10);
+        GameManager.gameManagerInstance.playerMaxMana = maxMana;
+        manaRegenRate = intelligence + 0.5f + (intelligence * 0.05f);
+        GameManager.gameManagerInstance.playerManaRegenRate = manaRegenRate;
+        manaBar.UpdateContainerLength();
+    }
+    private void SetSpirituality(int nSpirituality) {
+        GameManager.gameManagerInstance.spirituality = nSpirituality;
+        spirituality = nSpirituality;
+    }
+    private void SetEndurance(int nEndurance) {
+        GameManager.gameManagerInstance.endurance = nEndurance;
+        endurance = nEndurance;
+        stamina = endurance + 10 + (endurance * 10);
+        maxStamina = endurance + 10 + (endurance * 10);
+        GameManager.gameManagerInstance.playerMaxStamina = maxStamina;
+        staminaRegenRate = endurance + 2.0f + (endurance * 0.05f);
+        GameManager.gameManagerInstance.playerStaminaRegenRate = staminaRegenRate;
+        moveSpeed = endurance + 0.75f + (endurance * 0.02f);
+        GameManager.gameManagerInstance.playerMoveSpeed = moveSpeed;
+        equipLoad = endurance + 20 + endurance;
+        GameManager.gameManagerInstance.equipLoad = equipLoad;
+        staminaBar.UpdateContainerLength();
+    }
+
+    // stats
+    private void SetMaxHitpoint(int nMaxHitpoint) {
+        GameManager.gameManagerInstance.playerMaxHitpoint = nMaxHitpoint;
+        maxHitpoint = nMaxHitpoint;
+        healthBar.UpdateContainerLength();
+    }
+    private void SetHealthRegenRate(int nHealthRegenRate) {
+        GameManager.gameManagerInstance.playerHealthRegenRate = nHealthRegenRate;
+        healthRegenRate = nHealthRegenRate;
+    }
+    private void SetMaxMana(int nMaxMana) {
+        GameManager.gameManagerInstance.playerMaxMana = nMaxMana;
+        maxMana = nMaxMana;
+        manaBar.UpdateContainerLength();
+    }
+    private void SetManaRegenRate(int nManaRegenRate) {
+        GameManager.gameManagerInstance.playerManaRegenRate = nManaRegenRate;
+        manaRegenRate = nManaRegenRate;
+    }
+    private void SetMaxStamina(int nMaxStamina) {
+        GameManager.gameManagerInstance.playerMaxStamina = nMaxStamina;
+        maxStamina = nMaxStamina;
+        staminaBar.UpdateContainerLength();
+    }
+    private void SetStaminaRegenRate(int nStaminaRegenRate) {
+        GameManager.gameManagerInstance.playerStaminaRegenRate = nStaminaRegenRate;
+        staminaRegenRate = nStaminaRegenRate;
+    }
+    private void SetEquipLoad(int nEquipLoad) {
+        GameManager.gameManagerInstance.equipLoad = nEquipLoad;
+        equipLoad = nEquipLoad;
+    }
+    private void SetMoveSpeed(int nMoveSpeed) {
+        GameManager.gameManagerInstance.playerMoveSpeed = nMoveSpeed;
+        moveSpeed = nMoveSpeed;
+    }
+
 }

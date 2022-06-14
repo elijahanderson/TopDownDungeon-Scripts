@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     public Player player;
-    public GameObject healthTextPrefab;  // text display
 
     protected Text healthText;
     protected RectTransform container;
@@ -26,8 +25,7 @@ public class HealthBar : MonoBehaviour
     protected virtual void Update() {
         // set health bar's length based on player's current and max health
         if (!hpLengthIsSet) {
-            container.offsetMax = new Vector2(-1750 + (int) player.maxHitpoint, container.offsetMax.y);
-            containerLength = (int) container.rect.width;
+            UpdateContainerLength();
             hpLengthIsSet = true;
         }
 
@@ -40,5 +38,12 @@ public class HealthBar : MonoBehaviour
         hitpointInt = (int) player.hitpoint;
         maxHitpointInt = (int) player.maxHitpoint;
         healthText.text = hitpointInt.ToString() + "/" + maxHitpointInt.ToString();
+    }
+
+    public void UpdateContainerLength() {
+        if (player.maxHitpoint < 1700) {
+            container.offsetMax = new Vector2(-1750 + (int) player.maxHitpoint, container.offsetMax.y);
+            containerLength = (int) container.rect.width;
+        }
     }
 }

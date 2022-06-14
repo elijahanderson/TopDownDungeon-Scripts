@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Menu : MonoBehaviour
+public class CharacterMenu : MonoBehaviour
 {
     private Canvas canvas;
 
@@ -13,11 +13,9 @@ public class Menu : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !canvas.enabled) {
-            Debug.Log("Pause");
+        if (Input.GetKeyDown(KeyCode.C) && !canvas.enabled) {
             canvas.enabled = true;
-        } else if (Input.GetKeyDown(KeyCode.Escape) && canvas.enabled) {
-            Debug.Log("Continue");
+        } else if (Input.GetKeyDown(KeyCode.C) && canvas.enabled) {
             canvas.enabled = false;
         }
     }

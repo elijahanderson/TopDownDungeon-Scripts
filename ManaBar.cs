@@ -22,14 +22,12 @@ public class ManaBar : MonoBehaviour
         manaBarRect = transform.Find("ManaBar").GetComponent<RectTransform>();
         manaBarImage = transform.Find("ManaBar").GetComponent<Image>();
         manaText = transform.Find("ManaText").GetComponent<Text>();
-        maxManaInt = (int) player.maxMana;
     }
 
     protected virtual void Update() {
         // set container length only once
         if (!manaLengthIsSet) {
-            container.offsetMax = new Vector2(-1750 + (int) player.maxMana, container.offsetMax.y);
-            containerLength = (int) container.rect.width;
+            UpdateContainerLength();
             manaLengthIsSet = true;
         }
 
@@ -46,7 +44,15 @@ public class ManaBar : MonoBehaviour
             manaBarImage.color = tempColor;
         }
         manaBarRect.offsetMax = new Vector2(manaBarLengthCalc - containerLength + 4, manaBarRect.offsetMax.y);
+        maxManaInt = (int) player.maxMana;
         manaInt = (int) player.mana;
         manaText.text = manaInt.ToString() + "/" + maxManaInt.ToString();
+    }
+
+    public void UpdateContainerLength() {
+        if (player.maxMana < 1700) {
+            container.offsetMax = new Vector2(-1750 + (int) player.maxMana, container.offsetMax.y);
+            containerLength = (int) container.rect.width;
+        }
     }
 }

@@ -27,8 +27,7 @@ public class StaminaBar : MonoBehaviour
     protected virtual void Update() {
         // set container length only once
         if (!staminaLengthIsSet) {
-            container.offsetMax = new Vector2(-1750 + (int) player.maxStamina, container.offsetMax.y);
-            containerLength = (int) container.rect.width;
+            UpdateContainerLength();
             staminaLengthIsSet = true;
         }
 
@@ -49,5 +48,12 @@ public class StaminaBar : MonoBehaviour
         maxStaminaInt = (int) player.maxStamina;
         staminaInt = (int) player.stamina;
         staminaText.text = staminaInt.ToString() + "/" + maxStaminaInt.ToString();
+    }
+
+    public void UpdateContainerLength() {
+        if (player.maxStamina < 1700) {
+            container.offsetMax = new Vector2(-1750 + (int) player.maxStamina, container.offsetMax.y);
+            containerLength = (int) container.rect.width;
+        }
     }
 }
