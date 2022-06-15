@@ -51,6 +51,7 @@ public class Weapon : Interactable
             dmg.damageAmount = rand.Next(minDamage, maxDamage);
             dmg.origin = transform.position;
             dmg.push = pushForce;
+            dmg.damageType = "physical";
             hit.SendMessage("ReceiveDamage", dmg);
         }
     }

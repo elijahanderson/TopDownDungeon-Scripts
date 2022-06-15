@@ -5,6 +5,7 @@ using UnityEngine;
 public struct Damage
 {
     public Vector2 origin;
-    public int damageAmount;
+    public float damageAmount;
     public float push;
+    public string damageType;
 }

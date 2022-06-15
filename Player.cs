@@ -15,49 +15,65 @@ public class Player : Mover
     public int intelligence;
     public int spirituality;
     public int endurance;
-    public int equipLoad;
+    public int totalGold;
 
     protected Vector2 target;
     protected RaycastHit2D hitX;
     protected RaycastHit2D hitY;
 
-    // dash related variables
-    protected float dashCooldown;
-    protected float dashStaminaCost;
-    protected float dashSpeed;
-    protected float lastDash;
-    protected bool isDashing;
-
     protected override void Start() {
         base.Start();
+        // attributes
         constitution = GameManager.gameManagerInstance.constitution;
         strength = GameManager.gameManagerInstance.strength;
         intelligence = GameManager.gameManagerInstance.intelligence;
         spirituality = GameManager.gameManagerInstance.spirituality;
         endurance = GameManager.gameManagerInstance.endurance;
+
+        // stats
+        level = GameManager.gameManagerInstance.playerLevel;
+        totalGold = GameManager.gameManagerInstance.totalGold;
+
         hitpoint = 100 + (constitution * 20);
         maxHitpoint = 100 + (constitution * 20);
         GameManager.gameManagerInstance.playerMaxHitpoint = maxHitpoint;
+
         healthRegenRate = 2.0f + (constitution * 0.10f);
         GameManager.gameManagerInstance.playerHealthRegenRate = healthRegenRate;
+
         mana = 10 + (intelligence * 10);
         maxMana = 10 + (intelligence * 10);
         GameManager.gameManagerInstance.playerMaxMana = maxMana;
+
         manaRegenRate = 0.5f + (intelligence * 0.05f);
         GameManager.gameManagerInstance.playerManaRegenRate = manaRegenRate;
+
         stamina = 10 + (endurance * 10);
         maxStamina = 10 + (endurance * 10);
         GameManager.gameManagerInstance.playerMaxStamina = maxStamina;
+
         staminaRegenRate = 2.0f + (endurance * 0.05f);
         GameManager.gameManagerInstance.playerStaminaRegenRate = staminaRegenRate;
+
+        // movement
         moveSpeed = 0.75f + (endurance * 0.02f);
         GameManager.gameManagerInstance.playerMoveSpeed = moveSpeed;
-        equipLoad = 20 + endurance;
-        GameManager.gameManagerInstance.equipLoad = equipLoad;
 
-        dashCooldown = 1.0f;
-        dashStaminaCost = 5.0f;
-        dashSpeed = 2.0f;
+        dashCooldown = 1.0f - (0.01f * endurance);
+        GameManager.gameManagerInstance.playerDashCooldown = dashCooldown;
+
+        dashStaminaCost = 5.0f - (0.1f * endurance);
+        GameManager.gameManagerInstance.playerDashStaminaCost = dashStaminaCost;
+
+        dashSpeed = 2.0f + (0.1f * endurance);
+        GameManager.gameManagerInstance.playerDashSpeed = dashSpeed;
+
+        // resistances
+        flatDamageReduction = GameManager.gameManagerInstance.playerFlatDamageReduction;
+        physicalResistance = GameManager.gameManagerInstance.playerPhysicalResistance;
+        aetherResistance = GameManager.gameManagerInstance.playerAetherResistance;
+        timeResistance = GameManager.gameManagerInstance.playerTimeResistance;
+
         lastDash = Time.time;
         isDashing = false;
         target = transform.position;
@@ -74,6 +90,9 @@ public class Player : Mover
                                         && stamina > 0
                                         && Vector2.Distance(target, transform.position) > 0.01f)
             StartCoroutine("Dash");
+        // update player gold if needed
+        if (totalGold < GameManager.gameManagerInstance.totalGold)
+            totalGold = GameManager.gameManagerInstance.totalGold;
     }
 
     protected virtual void FixedUpdate() {
@@ -118,20 +137,7 @@ public class Player : Mover
         }
     }
 
-    private IEnumerator Dash() {
-        moveSpeed *= dashSpeed;
-        stamina -= dashStaminaCost;
-        lastDash = Time.time;
-        isDashing = true;
-        yield return new WaitForSeconds(0.5f);
-        moveSpeed /= dashSpeed;
-        isDashing = false;
-    }
-
-    /*
-        A bunch of setters for managing player's attributes and stats
-    */
-    // attributes
+    // attributes setters
     private void SetConstitution(int nConstitution) {
         GameManager.gameManagerInstance.constitution = nConstitution;
         constitution = nConstitution;
@@ -170,46 +176,69 @@ public class Player : Mover
         GameManager.gameManagerInstance.playerStaminaRegenRate = staminaRegenRate;
         moveSpeed = endurance + 0.75f + (endurance * 0.02f);
         GameManager.gameManagerInstance.playerMoveSpeed = moveSpeed;
-        equipLoad = endurance + 20 + endurance;
-        GameManager.gameManagerInstance.equipLoad = equipLoad;
+        dashCooldown = 1.0f - (0.01f * endurance);
+        GameManager.gameManagerInstance.playerDashCooldown = dashCooldown;
+        dashStaminaCost = 5.0f - (0.1f * endurance);
+        GameManager.gameManagerInstance.playerDashStaminaCost = dashStaminaCost;
+        dashSpeed = 2.0f + (0.1f * endurance);
+        GameManager.gameManagerInstance.playerDashSpeed = dashSpeed;
         staminaBar.UpdateContainerLength();
     }
 
-    // stats
-    private void SetMaxHitpoint(int nMaxHitpoint) {
+    // stats setters
+    private void SetLevel(int nLevel) {
+        GameManager.gameManagerInstance.playerLevel = nLevel;
+        level = nLevel;
+    }
+    private void SetGold(int nGold) {
+        GameManager.gameManagerInstance.totalGold = nGold;
+        totalGold = nGold;
+    }
+    private void SetMaxHitpoint(float nMaxHitpoint) {
         GameManager.gameManagerInstance.playerMaxHitpoint = nMaxHitpoint;
         maxHitpoint = nMaxHitpoint;
         healthBar.UpdateContainerLength();
     }
-    private void SetHealthRegenRate(int nHealthRegenRate) {
+    private void SetHealthRegenRate(float nHealthRegenRate) {
         GameManager.gameManagerInstance.playerHealthRegenRate = nHealthRegenRate;
         healthRegenRate = nHealthRegenRate;
     }
-    private void SetMaxMana(int nMaxMana) {
+    private void SetMaxMana(float nMaxMana) {
         GameManager.gameManagerInstance.playerMaxMana = nMaxMana;
         maxMana = nMaxMana;
         manaBar.UpdateContainerLength();
     }
-    private void SetManaRegenRate(int nManaRegenRate) {
+    private void SetManaRegenRate(float nManaRegenRate) {
         GameManager.gameManagerInstance.playerManaRegenRate = nManaRegenRate;
         manaRegenRate = nManaRegenRate;
     }
-    private void SetMaxStamina(int nMaxStamina) {
+    private void SetMaxStamina(float nMaxStamina) {
         GameManager.gameManagerInstance.playerMaxStamina = nMaxStamina;
         maxStamina = nMaxStamina;
         staminaBar.UpdateContainerLength();
     }
-    private void SetStaminaRegenRate(int nStaminaRegenRate) {
+    private void SetStaminaRegenRate(float nStaminaRegenRate) {
         GameManager.gameManagerInstance.playerStaminaRegenRate = nStaminaRegenRate;
         staminaRegenRate = nStaminaRegenRate;
     }
-    private void SetEquipLoad(int nEquipLoad) {
-        GameManager.gameManagerInstance.equipLoad = nEquipLoad;
-        equipLoad = nEquipLoad;
-    }
-    private void SetMoveSpeed(int nMoveSpeed) {
+    private void SetMoveSpeed(float nMoveSpeed) {
         GameManager.gameManagerInstance.playerMoveSpeed = nMoveSpeed;
         moveSpeed = nMoveSpeed;
     }
-
+    private void SetFlatDamageReduction(float nFlatDamageReduction) {
+        GameManager.gameManagerInstance.playerFlatDamageReduction = nFlatDamageReduction;
+        flatDamageReduction = nFlatDamageReduction;
+    }
+    private void SetPhysicalResistance(float nPhysicalResistance) {
+        GameManager.gameManagerInstance.playerPhysicalResistance = nPhysicalResistance;
+        physicalResistance = nPhysicalResistance;
+    }
+    private void SetAetherResistance(float nAetherResistance) {
+        GameManager.gameManagerInstance.playerAetherResistance = nAetherResistance;
+        aetherResistance = nAetherResistance;
+    }
+    private void SetTimeResistance(float nTimeResistance) {
+        GameManager.gameManagerInstance.playerTimeResistance = nTimeResistance;
+        timeResistance = nTimeResistance;
+    }
 }

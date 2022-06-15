@@ -7,7 +7,10 @@ public abstract class Mover : Fighter
     protected BoxCollider2D boxCollider;
     protected Vector2 moveDelta;
     protected RaycastHit2D hit;
-    protected float moveSpeed;
+    protected float lastDash;
+    protected bool isDashing;
+
+    public float moveSpeed;
 
     protected override void Start() {
         base.Start();
@@ -54,6 +57,16 @@ public abstract class Mover : Fighter
         // move if moveDelta is not zero
         if (hit.collider == null)
             transform.Translate(new Vector2(moveDelta.x, 0) * Time.deltaTime);
+    }
+
+    protected IEnumerator Dash() {
+        moveSpeed *= dashSpeed;
+        stamina -= dashStaminaCost;
+        lastDash = Time.time;
+        isDashing = true;
+        yield return new WaitForSeconds(0.5f);
+        moveSpeed /= dashSpeed;
+        isDashing = false;
     }
 
     protected override void Die() {

@@ -5,6 +5,9 @@ using UnityEngine;
 public abstract class Fighter : MonoBehaviour
 {
     public GameObject dmgFloatingText;
+
+    // stats
+    public int level;
     public float hitpoint;
     public float maxHitpoint;
     public float healthRegenRate;
@@ -15,6 +18,15 @@ public abstract class Fighter : MonoBehaviour
     public float maxStamina;
     public float staminaRegenRate;
     public bool isDead;
+    // resistances
+    public float flatDamageReduction;
+    public float physicalResistance;
+    public float aetherResistance;
+    public float timeResistance;
+    // dash related variables
+    public float dashCooldown;
+    public float dashStaminaCost;
+    public float dashSpeed;
 
     // immunity
     protected float immuneTime;
@@ -37,8 +49,6 @@ public abstract class Fighter : MonoBehaviour
         nextUpdate = 0.0f;
         sprite = transform.Find("Sprite").GetComponent<SpriteRenderer>();
         deathAnimation = transform.Find("Sprite").GetComponent<Animator>();
-        // periodic updating
-        InvokeRepeating("UpdateEverySecond", 0, 1.0f);
     }
 
     protected virtual void Update() {
@@ -56,7 +66,6 @@ public abstract class Fighter : MonoBehaviour
             mana = manaCalc;
 
         float staminaCalc = stamina + (staminaRegenRate * Time.deltaTime);
-        Debug.Log(staminaCalc);
         if (maxStamina < staminaCalc)
             stamina += maxStamina - stamina;
         else if (maxStamina >= staminaCalc)
@@ -70,10 +79,20 @@ public abstract class Fighter : MonoBehaviour
         // if not immune, receive damage
         if ((Time.time - lastImmune > immuneTime) && !isDead) {
             lastImmune = Time.time;
+            // damage reduction
+            if (flatDamageReduction != 0)
+                dmg.damageAmount *= flatDamageReduction;
+            if (dmg.damageType == "physical" && physicalResistance != 0)
+                dmg.damageAmount *= physicalResistance;
+            else if (dmg.damageType == "aether" && aetherResistance != 0)
+                dmg.damageAmount *= aetherResistance;
+            else if (dmg.damageType == "time" && timeResistance != 0)
+                dmg.damageAmount *= timeResistance;
+
             hitpoint -= dmg.damageAmount;
 
             // show damage floating text
-            showDmgFloatingText(dmgFloatingText, dmg.damageAmount);
+            showDmgFloatingText(dmgFloatingText, (int) dmg.damageAmount);
 
             // calculate push direction based on the damage origin and the fighter's current position
             pushDirection = (new Vector2(transform.position.x, transform.position.y)

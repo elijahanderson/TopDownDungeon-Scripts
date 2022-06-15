@@ -31,6 +31,7 @@ public class EnemyHitbox : Interactable
             dmg.damageAmount = rand.Next(minDamage, maxDamage);
             dmg.origin = transform.position;
             dmg.push = pushForce;
+            dmg.damageType = "time";
             hit.SendMessage("ReceiveDamage", dmg);
         }
     }
