@@ -82,7 +82,7 @@ public class Player : Mover
     protected override void Update() {
         base.Update();
         // if mouse is clicked down, get its position and set it as the movement target
-        if ((Input.GetMouseButton(0) || Input.GetMouseButton(4)) && !isDashing)
+        if ((Input.GetMouseButton(0) || Input.GetMouseButton(4)) && !isDashing && Time.timeScale != 0)
             target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         // dash mechanic
         if (Input.GetKey(KeyCode.Space)

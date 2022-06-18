@@ -28,18 +28,20 @@ public class GameManager : MonoBehaviour
     public float playerManaRegenRate;
     public float playerMaxStamina;
     public float playerStaminaRegenRate;
+
     public float playerMoveSpeed;
-    public int totalGold;
-    public int experience;
-    public int playerLevel;
     public float playerDashCooldown;
     public float playerDashStaminaCost;
     public float playerDashSpeed;
-    // resistances
+
     public float playerFlatDamageReduction;
     public float playerPhysicalResistance;
     public float playerAetherResistance;
     public float playerTimeResistance;
+
+    public int totalGold;
+    public int experience;
+    public int playerLevel;
 
     private void Awake() {
         // delete previous game manager instances if necessary
@@ -63,8 +65,6 @@ public class GameManager : MonoBehaviour
         s += intelligence.ToString() + "|";
         s += spirituality.ToString() + "|";
         s += endurance.ToString() + "|";
-        s += experience.ToString() + "|";
-        s += experience.ToString() + "|";
         // equipment and stats
         s += playerMaxHitpoint.ToString() + "|";
         s += playerHealthRegenRate.ToString() + "|";
@@ -72,7 +72,17 @@ public class GameManager : MonoBehaviour
         s += playerManaRegenRate.ToString() + "|";
         s += playerMaxStamina.ToString() + "|";
         s += playerStaminaRegenRate.ToString() + "|";
+
         s += playerMoveSpeed.ToString() + "|";
+        s += playerDashCooldown.ToString() + "|";
+        s += playerDashStaminaCost.ToString() + "|";
+        s += playerDashSpeed.ToString() + "|";
+
+        s += playerFlatDamageReduction.ToString() + "|";
+        s += playerPhysicalResistance.ToString() + "|";
+        s += playerAetherResistance.ToString() + "|";
+        s += playerTimeResistance.ToString() + "|";
+
         s += totalGold.ToString() + "|";
         s += experience.ToString() + "|";
         s += playerLevel.ToString() + "|";
@@ -90,15 +100,26 @@ public class GameManager : MonoBehaviour
         intelligence = int.Parse(saveData[2]);
         spirituality = int.Parse(saveData[3]);
         endurance = int.Parse(saveData[4]);
-        playerMaxHitpoint = int.Parse(saveData[5]);
-        playerHealthRegenRate = int.Parse(saveData[6]);
-        playerMaxMana = int.Parse(saveData[7]);
-        playerManaRegenRate = int.Parse(saveData[8]);
-        playerMaxStamina = int.Parse(saveData[9]);
-        playerStaminaRegenRate = int.Parse(saveData[10]);
-        playerMoveSpeed = int.Parse(saveData[11]);
-        totalGold = int.Parse(saveData[12]);
-        experience = int.Parse(saveData[13]);
-        playerLevel = int.Parse(saveData[14]);
+
+        playerMaxHitpoint = float.Parse(saveData[5]);
+        playerHealthRegenRate = float.Parse(saveData[6]);
+        playerMaxMana = float.Parse(saveData[7]);
+        playerManaRegenRate = float.Parse(saveData[8]);
+        playerMaxStamina = float.Parse(saveData[9]);
+        playerStaminaRegenRate = float.Parse(saveData[10]);
+
+        playerMoveSpeed = float.Parse(saveData[11]);
+        playerDashCooldown = float.Parse(saveData[12]);
+        playerDashStaminaCost = float.Parse(saveData[13]);
+        playerDashSpeed = float.Parse(saveData[14]);
+
+        playerFlatDamageReduction = float.Parse(saveData[15]);
+        playerPhysicalResistance = float.Parse(saveData[16]);
+        playerAetherResistance = float.Parse(saveData[17]);
+        playerTimeResistance = float.Parse(saveData[18]);
+
+        totalGold = int.Parse(saveData[19]);
+        experience = int.Parse(saveData[20]);
+        playerLevel = int.Parse(saveData[21]);
     }
 }
