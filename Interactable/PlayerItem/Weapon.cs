@@ -3,34 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : Interactable
+public class Weapon : Collectable
 {
     // damage
     public Player player;
+    public Animator swingAnimation;
     public int minDamage;
     public int maxDamage;
     public float pushForce;
     public int weaponLevel;
     public int staminaCost;
+    public string dmgType;
+    public bool isEquipped;
 
     private SpriteRenderer spriteRenderer;
-    private Animator swingAnimation;
 
     // attacking
-    private float cooldown;
-    private float lastSwing;
+    protected float cooldown;
+    protected float lastSwing;
 
     protected override void Start() {
         base.Start();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        minDamage = 5;
-        maxDamage = 15;
-        pushForce = 5.0f;
-        weaponLevel = 0;
-        cooldown = 0.5f;
-        lastSwing = Time.time;
-        staminaCost = 4;
         swingAnimation = GetComponent<Animator>();
+        swingAnimation.enabled = false;
+        isEquipped = false;
     }
 
     protected override void Update() {
@@ -44,15 +41,27 @@ public class Weapon : Interactable
     }
 
     protected override void OnCollide(Collider2D hit) {
-        if (hit.name != "Player" && hit.tag == "Fighter" && !player.isDead) {
+        if (hit.name != "Player" && hit.tag == "Fighter" && !player.isDead && isEquipped) {
             // send damage to the enemy
             Random rand = new Random();
             Damage dmg = new Damage();
             dmg.damageAmount = rand.Next(minDamage, maxDamage);
             dmg.origin = transform.position;
             dmg.push = pushForce;
-            dmg.damageType = "physical";
+            dmg.damageType = dmgType;
             hit.SendMessage("ReceiveDamage", dmg);
+        } else if (hit.name == "Player") {
+            // weapon not yet equpped by player -- collect it
+            OnCollect();
+        }
+    }
+
+    protected override void OnCollect()
+    {
+        // collect and add to player inventory
+        if (!collected) {
+            collected = true;
+            player.CollectWeapon(this);
         }
     }
 }

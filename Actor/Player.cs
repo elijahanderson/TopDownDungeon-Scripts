@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class Player : Mover
     protected Vector2 target;
     protected RaycastHit2D hitX;
     protected RaycastHit2D hitY;
+    protected bool weaponEquipped;
 
     protected override void Start() {
         base.Start();
@@ -99,13 +101,17 @@ public class Player : Mover
         // swap sprite direction
         if (target.x > transform.position.x) {
             transform.Find("Sprite").localScale = new Vector2(-1, 1);
-            transform.Find("WeaponLeft").gameObject.SetActive(false);
-            transform.Find("WeaponRight").gameObject.SetActive(true);
+            try {
+                transform.Find("Weapon").GetChild(0).Find("WeaponLeft").gameObject.SetActive(false);
+                transform.Find("Weapon").GetChild(0).Find("WeaponRight").gameObject.SetActive(true);
+            } catch (UnityException e) {}
         }
         else if (target.x < transform.position.x) {
             transform.Find("Sprite").localScale = new Vector2(1, 1);
-            transform.Find("WeaponRight").gameObject.SetActive(false);
-            transform.Find("WeaponLeft").gameObject.SetActive(true);
+            try {
+                transform.Find("Weapon").GetChild(0).Find("WeaponRight").gameObject.SetActive(false);
+                transform.Find("Weapon").GetChild(0).Find("WeaponLeft").gameObject.SetActive(true);
+            } catch (UnityException e) {}
         }
 
         // check for collisions
@@ -136,6 +142,23 @@ public class Player : Mover
                                                          moveSpeed * Time.deltaTime);
         }
     }
+
+    // for collecting items
+    public void CollectWeapon(Weapon weapon)
+    {
+        // if player has no weapon, auto equip
+        if (!weaponEquipped)
+            EquipWeapon(weapon);
+    }
+    private void EquipWeapon(Weapon weapon)
+    {
+        weaponEquipped = true;
+        weapon.transform.parent.parent = transform.Find("Weapon").transform;
+        weapon.isEquipped = true;
+        weapon.transform.parent.position = transform.position;
+        weapon.swingAnimation.enabled = true;
+    }
+
 
     // attributes setters
     private void SetConstitution(int nConstitution) {
