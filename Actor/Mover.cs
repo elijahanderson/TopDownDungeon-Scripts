@@ -9,7 +9,8 @@ public abstract class Mover : Fighter
     protected RaycastHit2D hit;
     protected float lastDash;
     protected bool isDashing;
-
+    
+    public bool isMoving;
     public float moveSpeed;
 
     protected override void Start() {

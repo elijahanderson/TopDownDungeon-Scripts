@@ -8,6 +8,7 @@ public class Weapon : Collectable
     // damage
     public Player player;
     public Animator swingAnimation;
+    public GameObject labelButtonPrefab;
     public int minDamage;
     public int maxDamage;
     public float pushForce;
@@ -16,15 +17,13 @@ public class Weapon : Collectable
     public string dmgType;
     public bool isEquipped;
 
-    private SpriteRenderer spriteRenderer;
-
+    protected GameObject label;
     // attacking
     protected float cooldown;
     protected float lastSwing;
 
     protected override void Start() {
         base.Start();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         swingAnimation = GetComponent<Animator>();
         swingAnimation.enabled = false;
         isEquipped = false;
@@ -33,7 +32,7 @@ public class Weapon : Collectable
     protected override void Update() {
         base.Update();
         // swing if allowed to swing
-        if (Input.GetKey(KeyCode.F) && player.stamina > 0 && Time.time - lastSwing >= cooldown) {
+        if (Input.GetKey(KeyCode.F) && player.stamina > 0 && Time.time - lastSwing >= cooldown && isEquipped) {
             lastSwing = Time.time;
             player.stamina -= staminaCost;
             swingAnimation.SetTrigger("Swing");
@@ -50,18 +49,33 @@ public class Weapon : Collectable
             dmg.push = pushForce;
             dmg.damageType = dmgType;
             hit.SendMessage("ReceiveDamage", dmg);
-        } else if (hit.name == "Player") {
-            // weapon not yet equpped by player -- collect it
-            OnCollect();
         }
+    }
+
+    protected virtual void OnMouseDown()
+    {
+        // collect and add to player inventory
+        if (!collected) {
+            StartCoroutine("WaitForPlayer");
+        }
+    }
+
+    protected virtual IEnumerator WaitForPlayer()
+    {
+        // wait one frame (for player.isMoving to be set to true)
+        int f = 1;
+        while (f > 0) {
+            f--;
+            yield return null;
+        }
+        yield return new WaitUntil(() => player.isMoving == false);
+        OnCollect();
     }
 
     protected override void OnCollect()
     {
-        // collect and add to player inventory
-        if (!collected) {
-            collected = true;
-            player.CollectWeapon(this);
-        }
+        collected = true;
+        Destroy(label);
+        player.CollectWeapon(this);
     }
 }

@@ -16,5 +16,10 @@ public class WoodenSword : Weapon
         lastSwing = Time.time;
         staminaCost = 4;
         dmgType = "physical";
+        // display label button
+        if (!collected) {
+            label = Instantiate(labelButtonPrefab, transform);
+            label.GetComponentInChildren<TextMesh>().text = "Wooden Sword";
+        }
     }
 }

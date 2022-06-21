@@ -78,14 +78,17 @@ public class Player : Mover
 
         lastDash = Time.time;
         isDashing = false;
+        isMoving = false;
         target = transform.position;
     }
 
     protected override void Update() {
         base.Update();
         // if mouse is clicked down, get its position and set it as the movement target
-        if ((Input.GetMouseButton(0) || Input.GetMouseButton(4)) && !isDashing && Time.timeScale != 0)
+        if ((Input.GetMouseButton(0) || Input.GetMouseButton(4)) && !isDashing && Time.timeScale != 0) {
             target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            isMoving = true;
+        }
         // dash mechanic
         if (Input.GetKey(KeyCode.Space)
                                         && Time.time - lastDash >= dashCooldown
@@ -140,6 +143,8 @@ public class Player : Mover
                 transform.position = Vector2.MoveTowards(transform.position,
                                                          new Vector2(transform.position.x, target.y),
                                                          moveSpeed * Time.deltaTime);
+        } else {
+            isMoving = false;
         }
     }
 
